@@ -1,5 +1,7 @@
 data/content/
 addon-chrome/content/
+pwa/public/content/
+pwa/service-worker.js
 logs/
 firefox/
 lib/vendor.bundle.js

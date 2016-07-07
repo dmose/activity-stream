@@ -8,9 +8,9 @@ function dispatch(action) {
 }
 
 module.exports = class PwaActivityStreams {
-	constructor() {
-		this._setupActionListeners();
-	}
+  constructor() {
+    this._setupActionListeners();
+  }
 
   _setupActionListeners() {
     window.addEventListener(CONTENT_TO_ADDON, (event) => {
@@ -61,7 +61,7 @@ module.exports = class PwaActivityStreams {
 
   _topFrecentSites(action) {
     const rows = [];
-    dispatch({type: "TOP_FRECENT_SITES_RESPONSE", data:rows});
+    dispatch({type: "TOP_FRECENT_SITES_RESPONSE", data: rows});
   }
 
   _recentBookmarks(action) {
