@@ -8,6 +8,7 @@ logs/
 dist/
 data/content/
 addon-chrome/content/
+pwa/public
 activity-streams-env/
 firefox/
 config.yml
