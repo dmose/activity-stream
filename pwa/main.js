@@ -7,6 +7,12 @@ const {Provider} = require("react-redux");
 const Routes = require("components/Routes/Routes");
 const store = require("content-src/store");
 
+if ("serviceWorker" in navigator) {
+	navigator.serviceWorker
+		.register("./service-worker.js")
+		.then(() => console.log("Service Worker Registered"));
+}
+
 require("lib/shim")();
 
 // new PwaActivityStreams();

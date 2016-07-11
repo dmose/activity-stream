@@ -9,7 +9,7 @@ const defaults = {
 function template(rawOptions) {
   const options = Object.assign({}, defaults, rawOptions || {});
   const csp = options.csp === "on" ?
-    "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; img-src http: https: data:; style-src 'self' 'unsafe-inline'; child-src 'self' https://*.youtube.com https://*.vimeo.com; frame-src 'self' https://*.youtube.com https://*.vimeo.com\">" :
+    "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; manifest-src 'self'; img-src http: https: data:; style-src 'self' 'unsafe-inline'; child-src 'self' https://*.youtube.com https://*.vimeo.com; frame-src 'self' https://*.youtube.com https://*.vimeo.com\">" :
     "";
   return `<!doctype html>
 <html lang="en-us">
@@ -18,6 +18,7 @@ function template(rawOptions) {
     <meta charset="utf-8">
     ${csp}
     <title>${options.title}</title>
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="${options.baseUrl}main.css" />
     <link rel="icon" type="image/svg+xml" href="${options.baseUrl}img/newtab-icon.svg">
   </head>

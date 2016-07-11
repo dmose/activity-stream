@@ -1,5 +1,5 @@
 {
   "projects": {
-    "default": "activity-stream-mobile"
+    "dev": "activity-stream-pwa"
   }
 }
