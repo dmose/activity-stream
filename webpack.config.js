@@ -75,6 +75,6 @@ module.exports = {
       }
     ]
   },
-  devtool: env === "production" ? null : "eval", // This is for Firefox
+  devtool: env === "production" ? "inline-source-map" : "inline-source-map", // This is for Firefox
   plugins
 };
