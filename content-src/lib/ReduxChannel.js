@@ -1,6 +1,10 @@
+function fakeWindow() {}
+fakeWindow.addEventListener = function() {};
+fakeWindow.dispatchEvent = function() {};
+
 const DEFAULT_OPTIONS = {
   timeout: 20000,
-  target: window
+  target: fakeWindow
 };
 
 class Channel {

@@ -10,27 +10,59 @@ const outputFilename = "bundle.js";
 
 let env = process.env.NODE_ENV || "development";
 
-if (env !== "test") {
-  webpack_common.plugins.push(
-    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"));
+function getPreRenderPlugin(isPreRendered) {
+  return webpack.DefinePlugin({"PRERENDER": JSON.stringify(isPreRendered)});
 }
 
-module.exports = {
-  entry: {
-    app: srcPath,
-    vendor: [
-      "react",
-      "react-dom",
-      "moment"
-    ]
+function generatePlugins(filename) {
+  if (env !== "test") {
+    return webpack_common.plugins.concat(
+      new webpack.optimize.CommonsChunkPlugin("vendor", filename));
+  }
+
+  return webpack_common.plugins;
+}
+
+module.exports = [
+  {
+    name: "browser",
+    entry: {
+      app: srcPath,
+      vendor: [
+        "react",
+        "react-dom",
+        "moment"
+      ]
+    },
+    output: {
+      path: outputDir,
+      filename: outputFilename
+    },
+    target: "web",
+    module: webpack_common.module,
+    devtool: env === "production" ? null : "eval", // This is for Firefox
+    plugins: generatePlugins("vendor.bundle.js").concat(
+      getPreRenderPlugin(false)),
+    resolve: webpack_common.resolve
   },
-  output: {
-    path: outputDir,
-    filename: outputFilename
-  },
-  target: "web",
-  module: webpack_common.module,
-  devtool: env === "production" ? null : "eval", // This is for Firefox
-  plugins: webpack_common.plugins,
-  resolve: webpack_common.resolve
-};
+  {
+    name: "prerendered",
+    entry: {
+      app: "./bin/generate-html.js"
+      // vendor: [
+      //   "react",
+      //   "react-dom",
+      //   "moment"
+      // ]
+    },
+    output: {
+      path: outputDir,
+      filename: "generate-html.js"
+    },
+    target: "node",
+    module: webpack_common.module,
+    devtool: env === "production" ? null : "eval", // This is for Firefox
+    plugins: webpack_common.plugins.concat(getPreRenderPlugin("true")),
+    resolve: webpack_common.resolve
+  }
+];
