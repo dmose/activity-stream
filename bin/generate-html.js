@@ -9,39 +9,62 @@ const ReactDOMServer = require("react-dom/server");
 const store = require("../content-src/store.js");
 
 const {Provider} = require("react-redux");
-const {RoutingContext} = require("components/Routes/Routes");
-const NewTabPage = require("components/NewTabPage/NewTabPage");
+const {match, RouterContext} = require("react-router");
+const Routes = require("components/Routes/Routes");
 const defaults = {
   baseUrl: "",
   title: "Loading...",
-  csp: "on"
+  csp: "off"
 };
 
-function template(rawOptions) {
-  const options = Object.assign({}, defaults, rawOptions || {});
-  const csp = options.csp === "on" ?
-    "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; img-src http: https: data:; style-src 'self' 'unsafe-inline'; child-src 'self' https://*.youtube.com https://*.vimeo.com; frame-src 'self' https://*.youtube.com https://*.vimeo.com\">" :
+let Root;
+
+function promiseMatch() {
+  return new Promise((resolve, reject) => {
+    console.error("about to call match");
+    // console.error(Routes.RouteList);
+    match({routes: Routes.RouteList, location: "/"},
+      (error, redirectLocation, renderProps) => {
+        console.error("match callback called");
+        console.error(error, redirectLocation, renderProps);
+        if (renderProps) {
+          const Root = React.createClass({
+            render() {
+              const content = (
+                <Provider store={store}>
+                  <RouterContext {...renderProps} />
+                </Provider>
+              );
+              return content;
+            }
+          });
+          console.error("about to resolve");
+          resolve(Root);
+        } else {
+          console.error("this should never happen", error, redirectLocation);
+          reject("this should never happen");
+        }
+      });
+    console.error("match called");
+  });
+}
+
+function promiseTemplate(rawOptions) {
+  return new Promise((resolve, reject) => {
+    const options = Object.assign({}, defaults, rawOptions || {});
+    const csp = options.csp === "on" ?
+    "<meta http-equiv=\"Content-Security-Policy\"" +
+      " content=\"default-src 'none';" +
+      " script-src 'self'; img-src http: https: data:;" +
+      " style-src 'self' 'unsafe-inline';" +
+      " child-src 'self' https://*.youtube.com https://*.vimeo.com;" +
+      " frame-src 'self' https://*.youtube.com https://*.vimeo.com\">" :
     "";
 
-  console.error("before createClass");
-  const Root = React.createClass({
-    render() {
-      const content = (
-       <Provider store={store}>
-            <NewTabPage />
-        </Provider>
-      );
-
-      console.error("content = ", content);
-      return content;
-    }
-  });
-
-  console.error("before string render");
-  const preRenderedContent = ReactDOMServer.renderToString(<Root />);
-
-  console.error("before return");
-  return `<!doctype html>
+    promiseMatch().then(Root => {
+      console.error("Root in thenable", Root);
+      const preRenderedContent = ReactDOMServer.renderToString(<Root />);
+      resolve(`<!doctype html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8">
@@ -56,13 +79,17 @@ function template(rawOptions) {
     <script src="${options.baseUrl}bundle.js"></script>
   </body>
 </html>
-`;
+`);
+    });
+  });
 }
 
-module.exports = template;
+module.exports = promiseTemplate;
 
 if (require.main === module) {
   // called from command line
   const args = require("minimist")(process.argv.slice(2), {alias: {baseUrl: "b", title: "t"}});
-  process.stdout.write(template(args));
+  promiseTemplate(args).then(html => {
+    process.stdout.write(html);
+  });
 }
