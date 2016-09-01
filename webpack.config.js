@@ -11,7 +11,7 @@ const outputFilename = "bundle.js";
 let env = process.env.NODE_ENV || "development";
 
 function getPreRenderPlugin(isPreRendered) {
-  return webpack.DefinePlugin({"PRERENDER": JSON.stringify(isPreRendered)});
+  return new webpack.DefinePlugin({"PRERENDER": JSON.stringify(isPreRendered)});
 }
 
 function generatePlugins(filename) {
