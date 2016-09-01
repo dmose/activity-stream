@@ -9,7 +9,8 @@ const ReactDOMServer = require("react-dom/server");
 const store = require("../content-src/store.js");
 
 const {Provider} = require("react-redux");
-const Routes = require("components/Routes/Routes");
+const {RoutingContext} = require("components/Routes/Routes");
+const NewTabPage = require("components/NewTabPage/NewTabPage");
 const defaults = {
   baseUrl: "",
   title: "Loading...",
@@ -25,16 +26,19 @@ function template(rawOptions) {
   console.error("before createClass");
   const Root = React.createClass({
     render() {
-      return (
-        <Provider store={store}>
-          <Routes />
+      const content = (
+       <Provider store={store}>
+            <NewTabPage />
         </Provider>
       );
+
+      console.error("content = ", content);
+      return content;
     }
   });
 
   console.error("before string render");
-  const preRenderedContent = ReactDOMServer.renderToString(React.createElement(Root));
+  const preRenderedContent = ReactDOMServer.renderToString(<Root />);
 
   console.error("before return");
   return `<!doctype html>
