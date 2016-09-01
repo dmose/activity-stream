@@ -25,11 +25,6 @@ function template(rawOptions) {
   console.error("before createClass");
   const Root = React.createClass({
     render() {
-      // return (
-      //   React.createElement("Provider", {store},
-      //     React.createElement("Routes")
-      //   ));
-
       return (
         <Provider store={store}>
           <Routes />
