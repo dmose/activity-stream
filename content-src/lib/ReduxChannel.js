@@ -1,10 +1,13 @@
 function fakeWindow() {}
-fakeWindow.addEventListener = function() {};
-fakeWindow.dispatchEvent = function() {};
+
+if (PRERENDER) {
+  fakeWindow.addEventListener = function() {};
+  fakeWindow.dispatchEvent = function() {};
+}
 
 const DEFAULT_OPTIONS = {
   timeout: 20000,
-  target: fakeWindow
+  target: PRERENDER ? fakeWindow : window
 };
 
 class Channel {
