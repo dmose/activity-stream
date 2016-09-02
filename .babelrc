@@ -5,16 +5,7 @@
       "plugins": [
         "transform-es2015-destructuring",
         "transform-es2015-parameters",
-        "transform-strict-mode",
-        ["module-resolver", {
-          "root": ["."],
-          "alias": {
-            "common": "./common",
-            "components": "./content-src/components",
-            "lib": "./content-src/lib",
-            "reducers": "./content-src/reducers"
-          }
-        }]
+        "transform-strict-mode"
       ]
     }
   ]
