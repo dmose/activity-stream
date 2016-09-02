@@ -4,9 +4,10 @@ const {connect} = require("react-redux");
 const {actions} = require("common/action-manager");
 
 // This stuff needs a DOM to work with
+let customHistory;
 if (!PRERENDER) {
   const {createHashHistory} = require("history");
-  const history = useRouterHistory(createHashHistory)({queryKey: false});
+  customHistory = useRouterHistory(createHashHistory)({queryKey: false});
 }
 
 let isFirstLoad = true;
@@ -19,16 +20,12 @@ const RouteList = (
       <IndexRoute title="History" component={require("components/TimelinePage/TimelineHistory")} />
       <Route title="History" path="bookmarks" component={require("components/TimelinePage/TimelineBookmarks")} />
     </Route>
-  </Route>  
-); 
+  </Route>
+);
 
 const Routes = React.createClass({
   componentDidMount() {
-    if (PRERENDER) {
-      return;
-    }
-    
-    this.unlisten = history.listen(location => {
+    this.unlisten = customHistory.listen(location => {
       this.props.dispatch(actions.NotifyRouteChange(Object.assign({}, location, {isFirstLoad})));
       if (isFirstLoad) {
         isFirstLoad = false;
@@ -40,8 +37,12 @@ const Routes = React.createClass({
     this.unlisten();
   },
   render() {
+    let routerProps = {};
+    if (!PRERENDER) {
+      routerProps.history = customHistory;
+    }
     return (
-      <Router>
+      <Router {...routerProps}>
         { RouteList }
       </Router>);
   }
