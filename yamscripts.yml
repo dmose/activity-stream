@@ -21,7 +21,7 @@ scripts:
     pre: =>clean && =>copyTestImages && =>copyTopSitesJson
     static: cpx "content-src/static/**/*" data/content
     svgo: svgo -q -f data/content/img/
-    webpack: webpack
+    webpack: NODE_ENV=production webpack
     webpackAddon: webpack --config webpack.addon.config.js
     css: node-sass content-src/main.scss -o data/content
     html: node ./data/content/generate-html.js > data/content/activity-streams.html
