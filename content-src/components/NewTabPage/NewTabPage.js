@@ -49,6 +49,25 @@ const NewTabPage = React.createClass({
     const recommendationIcon = props.Spotlight.recommendationShown ? "check" : "   ";
     const showRecommendationOption = props.showRecommendationOption;
 
+    // XXX forcibly add # on the server side so that it makes the # added on the
+    // client side by react-router's createHref() to make pre-rendered and
+    // dynamically rendered html completely identical so that React doesn't try
+    // to go to heroical measures to fix things up and (presumably) slow down
+    // the pre-render.  If we decide to stick with this hack, we need to be
+    // sure it's not necessary for any other <Link>s in the code.
+    //
+    // See https://github.com/reactjs/react-router/issues/2111 and 
+    // http://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writting-manually
+    // for some relevant info.
+    let debugLinkTo, timelineLinkTo;
+    if (PRERENDER) {
+      debugLinkTo = "#/debug";
+      timelineLinkTo = "#/timeline";
+    } else {
+      debugLinkTo = "/debug";
+      timelineLinkTo = "/timeline";
+    }
+
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
         <section>
@@ -77,7 +96,9 @@ const NewTabPage = React.createClass({
           </section>
 
           <section className="bottom-links-container">
-            <Link className="bottom-link" to="/timeline"><span className="icon icon-spacer icon-activity-stream" /> See all activity</Link>
+            <Link className="bottom-link" to={timelineLinkTo}>
+              <span className="icon icon-spacer icon-activity-stream" /> See all activity
+            </Link>
             <span className="link-wrapper-right">
               <a
                 ref="settingsLink"
@@ -98,7 +119,7 @@ const NewTabPage = React.createClass({
         </div>
       </div>
 
-      <Link className="debug-link" to="/debug">debug</Link>
+      <Link className="debug-link" to={debugLinkTo}>debug</Link>
     </main>);
   }
 });
