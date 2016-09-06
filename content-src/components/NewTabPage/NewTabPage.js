@@ -56,10 +56,11 @@ const NewTabPage = React.createClass({
     // the pre-render.  If we decide to stick with this hack, we need to be
     // sure it's not necessary for any other <Link>s in the code.
     //
-    // See https://github.com/reactjs/react-router/issues/2111 and 
+    // See https://github.com/reactjs/react-router/issues/2111 and
     // http://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writting-manually
     // for some relevant info.
-    let debugLinkTo, timelineLinkTo;
+    let debugLinkTo;
+    let timelineLinkTo;
     if (PRERENDER) {
       debugLinkTo = "#/debug";
       timelineLinkTo = "#/timeline";
