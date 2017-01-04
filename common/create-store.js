@@ -8,6 +8,12 @@ const loggerMiddleware = require("common/redux-logger");
 const {LOCAL_STORAGE_KEY} = require("common/constants");
 const {areSelectorsReady} = require("common/selectors/selectorUtils.js");
 
+let inContentSpace = typeof (Window) !== "undefined";
+let RavenMiddleware;
+if (inContentSpace) {
+  RavenMiddleware = require("redux-raven-middleware");
+}
+
 let store;
 
 /**
@@ -114,6 +120,12 @@ module.exports = function createActivityStreamStore(options) {
     thunk,
     parseUrlMiddleware
   ];
+
+  // RavenMiddleware supposedly must be ahead of thunk in the list
+  if (inContentSpace) {
+    mw.unshift(RavenMiddleware(
+      "https://8f7472f5a012407e9056a886648e91fd@sentry.prod.mozaws.net/150"));
+  }
 
   if (channel) {
     mw.push(channel.middleware);
