@@ -8,3 +8,6 @@ USE_SHIM: false
 # This is the embedly proxy server
 # File issues at https://github.com/mozilla/embedly-proxy/issues
 EMBEDLY_ENDPOINT: "https://embedly-proxy.services.mozilla.com/v2/extract"
+
+# The public DSN for our sentry server
+SENTRY_DSN: "https://8f7472f5a012407e9056a886648e91fd@sentry.prod.mozaws.net/150"

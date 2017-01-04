@@ -18,7 +18,7 @@ let plugins = [
     reactEnv: true,
     log: false
   }),
-  new webpack.DefinePlugin({ADDON: false}),
+  new webpack.DefinePlugin({ADDON: false, ENV: JSON.stringify(env)}),
   // Allows us to use requrie("common/vendor") as a way to import depdendencies in both addon/content code
   new webpack.NormalModuleReplacementPlugin(/common\/vendor/, absolute("./common/vendor-src.js"))
 ];

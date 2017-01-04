@@ -4,6 +4,22 @@ const {Provider} = require("react-redux");
 const Base = require("components/Base/Base");
 const createStore = require("common/create-store");
 const {ADDON_TO_CONTENT, CONTENT_TO_ADDON} = require("common/event-constants");
+const Raven = require("raven-js");
+
+function dataCallback(data) {
+  // if (data.exception.values && data.exception.values instanceof Array) {
+  //   data.exception.values.forEach((currentValue, index, array) => {
+  //
+  //   });
+  // }
+}
+
+// Do this first so all possible subsequent errors are captured and sent
+const ravenOptions = {
+  environment: ENV, // defined by webpack
+  dataCallback
+};
+Raven.config(__CONFIG__.SENTRY_DSN, ravenOptions).install();
 
 const store = createStore({
   incoming: ADDON_TO_CONTENT,
