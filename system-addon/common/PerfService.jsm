@@ -13,6 +13,7 @@ if (typeof Window === "undefined") {
 }
 
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Console.jsm");
 
 /* istanbul ignore if */
 if (typeof Window === "undefined") {
@@ -42,7 +43,10 @@ _PerfService.prototype = {
    * @return {void}
    */
   mark: function mark(str) {
-    this._perf.mark(str);
+    console.log(`about to mark ${str} related stuff`);
+    this._perf.mark(str + "_start");
+    this._perf.mark(str + "_end");
+    this._perf.measure(str + "_start", str + "_end");
   },
 
   /**
@@ -54,7 +58,7 @@ _PerfService.prototype = {
    * @return {Array}       Performance* objects
    */
   getEntriesByName: function getEntriesByName(name, type) {
-    return this._perf.getEntriesByName(name, type);
+    return this._perf.getEntriesByName(name + "_start", type);
   },
 
   /**

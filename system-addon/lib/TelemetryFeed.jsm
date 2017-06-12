@@ -12,7 +12,7 @@ const {perfService} = Cu.import("resource://activity-stream/common/PerfService.j
 Cu.import("resource://gre/modules/ClientID.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-
+Cu.import("resource://gre/modules/Console.jsm");
 XPCOMUtils.defineLazyServiceGetter(this, "gUUIDGenerator",
   "@mozilla.org/uuid-generator;1",
   "nsIUUIDGenerator");
@@ -37,6 +37,7 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   browserOpenNewtabStart() {
+    console.log("in bONS");
     perfService.mark("browser-open-newtab-start");
   }
 
