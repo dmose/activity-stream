@@ -162,7 +162,7 @@ class TopSitesPerfTimer extends React.Component {
     // Just for test dependency injection:
     this.perfSvc = this.props.perfSvc || perfSvc;
 
-    this._sendPaintedEvent = this._sendPaintedEvent.bind(this);
+    this._handlePaintedEvent = this._handlePaintedEvent.bind(this);
     this._timestampHandled = false;
   }
 
@@ -220,10 +220,10 @@ class TopSitesPerfTimer extends React.Component {
     // handle handle it.
     this._timestampHandled = true;
 
-    this._afterFramePaint(this._sendPaintedEvent);
+    this._afterFramePaint(this._handlePaintedEvent);
   }
 
-  _sendPaintedEvent() {
+  _handlePaintedEvent() {
     this.perfSvc.mark("topsites_first_painted_ts");
 
     try {
@@ -234,12 +234,70 @@ class TopSitesPerfTimer extends React.Component {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {topsites_first_painted_ts}
       }));
+
+      var POLLING_INTERVAL = 50;    // ms
+      var ALLOWED_DEVIATION_MS = 4; // ms
+      var REPORT_INTERVAL = 1000;   // ms
+      var POLLS_PER_REPORT =
+          REPORT_INTERVAL / POLLING_INTERVAL;
+
+      var last = performance.now(); // when we ran last
+      var total = 0;         // total callbacks
+      var late = 0;          // late callbacks
+
+      function poll() {
+        var now = performance.now();
+        var delta = now - last;
+        last = now;
+
+        // if we're more than 2x the polling interval
+        // + deviation, we missed one period completely
+        while (delta > ((POLLING_INTERVAL * 2)
+          + ALLOWED_DEVIATION_MS)) {
+          total++;
+          late++;
+          delta -= POLLING_INTERVAL; // adjust, try again
+        }
+
+        total++;
+
+        if (delta > (POLLING_INTERVAL + ALLOWED_DEVIATION_MS)) {
+          late++;
+        }
+      }
+
+      function report() {
+        // if we had more polls than we expect in each
+        // collection period, we must not have been able
+        // to report, so assume those periods were 100%
+        while (total > POLLS_PER_REPORT) {
+          console.log("Page Busy: 100%");
+
+          // reset the period by one
+          total -= POLLS_PER_REPORT;
+          late -= Math.max(POLLS_PER_REPORT, 0);
+        }
+
+        console.log("Page Busy: "
+          + Math.round(late / total * 100) + "%")
+
+        total = 0;
+        late = 0;
+      }
+      setInterval(poll, POLLING_INTERVAL);
+
+      let initialReportTimer = setInterval(() => {
+        clearInterval(initialReportTimer);
+        report();
+        setInterval(report, REPORT_INTERVAL);
+      }, REPORT_INTERVAL);
     } catch (ex) {
       // If this failed, it's likely because the `privacy.resistFingerprinting`
       // pref is true.  We should at least not blow up, and should continue
       // to set this._timestampHandled to avoid going through this again.
     }
   }
+
 
   render() {
     return (<TopSites {...this.props} />);
