@@ -39,6 +39,7 @@ function mergeStateReducer(mainReducer) {
  */
 const messageMiddleware = store => next => action => {
   if (au.isSendToMain(action)) {
+    performance.mark(`C>M (sent): ${JSON.stringify(action)}`);
     sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
   }
   next(action);
@@ -124,6 +125,7 @@ module.exports = function initStore(reducers, initialState) {
   if (global.addMessageListener) {
     global.addMessageListener(INCOMING_MESSAGE_NAME, msg => {
       try {
+        performance.mark(`M>C (received): ${JSON.stringify(msg.data)}`);
         store.dispatch(msg.data);
       } catch (ex) {
         console.error("Content msg:", msg, "Dispatch error: ", ex); // eslint-disable-line no-console

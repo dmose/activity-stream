@@ -7,6 +7,7 @@
 const {utils: Cu} = Components;
 Cu.import("resource:///modules/AboutNewTab.jsm");
 Cu.import("resource://gre/modules/RemotePageManager.jsm");
+const {perfService: perfService} = Cu.import("resource://activity-stream/common/PerfService.jsm", {});
 
 const {actionCreators: ac, actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
@@ -83,6 +84,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
    * @param  {string} targetId The portID of the port that sent the message
    */
   onActionFromContent(action, targetId) {
+    perfService.mark(`C>M (rcvd): ${action.type}`);
     this.dispatch(ac.SendToMain(action, targetId));
   }
 
@@ -92,6 +94,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
    * @param  {object} action A Redux action
    */
   broadcast(action) {
+    perfService.mark(`Main broadcast: ${JSON.stringify(action)}`)
     this.channel.sendAsyncMessage(this.outgoingMessageName, action);
   }
 
@@ -103,6 +106,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
   send(action) {
     const targetId = action.meta && action.meta.toTarget;
     const target = this.getTargetById(targetId);
+    perfService.mark(`M>C: ${JSON.stringify(action)}`);
     try {
       target.sendAsyncMessage(this.outgoingMessageName, action);
     } catch (e) {

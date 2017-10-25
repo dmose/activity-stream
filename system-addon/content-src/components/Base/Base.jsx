@@ -66,7 +66,7 @@ class Base extends React.PureComponent {
   // data has been consumed e.g. for counting the number of tabs that
   // have rendered that data.
   sendNewTabRehydrated(App) {
-    if (App && App.initialized && !this.renderNotified) {
+    if (App && App.initialized) { //  && !this.renderNotified) {
       this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_REHYDRATED, data: {}}));
       this.renderNotified = true;
     }
